@@ -1,17 +1,13 @@
-import { Route, Switch } from "wouter"
+import { Route, Switch } from 'wouter'
 
-import { AppPage } from "./app"
-import { SignUpPage } from "./sign-up"
+import { SignIn } from './sign-in'
+import { SignUp } from './sign-up'
 
 export function Router() {
   return (
     <Switch>
-      <Route path="/app">
-        <AppPage />
-      </Route>
-      <Route path="/sign-up">
-        <SignUpPage />
-      </Route>
+      <Route path="/sign-up" component={SignUp} />
+      <Route path="/sign-in" component={SignIn} />
     </Switch>
   )
 }

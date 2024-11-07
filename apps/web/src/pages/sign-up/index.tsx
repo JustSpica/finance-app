@@ -1,41 +1,134 @@
-import { useForm } from "react-hook-form";
-import { useLocation } from "wouter";
+import { CircleX, CircleDollarSign, Sparkles } from 'lucide-react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Link } from 'wouter'
 
-import { Button, Input } from "../../components";
-import { api } from "../../lib/axios";
+import { Button, Input } from '@app/components'
+import {
+  Toast,
+  ToastClose,
+  ToastDescription,
+  ToastProvider,
+  ToastTitle,
+  ToastViewport
+} from '@app/components/toast'
 
-type UserForm = {
-  name: string;
-  email: string;
-  password: string;
+/* import { api } from '@app/lib/axios' */
+import { AxiosError } from 'axios'
+
+type CreateUserData = {
+  email: string
+  password: string
+  username: string
 }
 
-export function SignUpPage() {
-  const { handleSubmit, register } = useForm<UserForm>();
-  const [, setLocation] = useLocation();
+export function SignUp() {
+  const [error, setError] = useState({
+    state: false,
+    message: ''
+  })
 
-  async function createUser(data: UserForm) {
+  const { handleSubmit, register } = useForm<CreateUserData>()
+
+  function onOpenChange(newState: boolean) {
+    setError((prevState) => ({ ...prevState, state: newState }))
+  }
+
+  async function createUser(data: CreateUserData) {
     try {
-      await api.post("/users/register", data)
+      console.log(data)
 
-      setLocation("/app")
-    } catch(error) {
-      console.error(error); 
+      /* const response = await api.post('/users', data) */
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error(error)
+        if (error.status === 409) {
+          setError({
+            message: 'O e-mail informado já está cadastrado.',
+            state: true
+          })
+        }
+      }
     }
   }
 
   return (
-    <section className="grid grid-cols-2 bg-zinc-900 h-screen">
-      <div className="h-full bg-zinc-950" />
-      <div className="px-16 py-16 space-y-6 flex flex-col justify-center">
-        <h1 className="text-white font-semibold text-3xl">Crie uma conta</h1>
-        <form className="flex flex-col space-y-4" onSubmit={handleSubmit(createUser)}>
-          <Input placeholder="Nome" {...register("name")} />
-          <Input placeholder="Email" {...register("email")} />
-          <Input placeholder="Senha" {...register("password")} />
-          <Button type="submit" variant="primary">Cadastrar-se</Button>
-        </form>
-      </div>
-    </section>
-  );
+    <ToastProvider>
+      <section className="flex h-screen w-full items-center bg-zinc-950">
+        <div className="mx-auto w-full max-w-[484px] space-y-8">
+          <header>
+            <CircleDollarSign className="text-white" size={32} />
+            <h1 className="mb-2 mt-6 text-2xl font-bold text-white">
+              Crie sua conta
+            </h1>
+            <span className="block text-sm text-zinc-400">
+              Já possui uma conta?{' '}
+              <Link className="text-blue-500 hover:underline" href="/sign-in">
+                Entre aqui
+              </Link>
+            </span>
+          </header>
+
+          <form onSubmit={handleSubmit(createUser)}>
+            <div className="space-y-2">
+              <label
+                className="text-sm font-medium text-zinc-400"
+                htmlFor="companyName"
+              >
+                Nome de usuário
+              </label>
+              <Input placeholder="John Doe" {...register('username')} />
+            </div>
+
+            <div className="mt-4 space-y-2">
+              <label
+                className="text-sm font-medium text-zinc-400"
+                htmlFor="companyName"
+              >
+                Email
+              </label>
+              <Input
+                type="email"
+                placeholder="JohnDoe@example.com"
+                {...register('email')}
+              />
+            </div>
+
+            <div className="mt-4 space-y-2">
+              <label
+                className="text-sm font-medium text-zinc-400"
+                htmlFor="companyName"
+              >
+                Senha
+              </label>
+              <Input
+                type="password"
+                placeholder="••••••••"
+                {...register('password')}
+              />
+            </div>
+
+            <Button className="mt-8 w-full font-medium">Criar conta</Button>
+          </form>
+        </div>
+      </section>
+
+      <Toast
+        className="flex gap-3"
+        open={error.state}
+        onOpenChange={onOpenChange}
+      >
+        <ToastClose />
+        <CircleX className="text-red-500" size={20} />
+        <div className="space-y-1">
+          <ToastTitle className="flex items-center gap-1">
+            <Sparkles className="text-zinc-400" size={16} />
+            Notificação de erro
+          </ToastTitle>
+          <ToastDescription>{error.message}</ToastDescription>
+        </div>
+      </Toast>
+      <ToastViewport />
+    </ToastProvider>
+  )
 }

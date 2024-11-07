@@ -14,13 +14,13 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(uuid())
-  name          String
-  email         String        @unique
+  id            String   @id @default(uuid())
+  username      String
+  email         String   @unique
   password_hash String
-  created_at    DateTime      @default(now())
+  created_at    DateTime @default(now())
 
-  transactions   Transaction[]
+  transactions Transaction[]
 
   @@map("users")
 }
@@ -32,8 +32,8 @@ model Transaction {
   type        String
 
   user_id String
-  
-  user   User   @relation(fields: [user_id], references: [id])
+
+  user User @relation(fields: [user_id], references: [id])
 
   @@map("transactions")
 }
