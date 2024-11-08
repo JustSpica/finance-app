@@ -1,7 +1,8 @@
+import { AxiosError } from 'axios'
 import { CircleX, CircleDollarSign, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link } from 'wouter'
+import { Link, useLocation } from 'wouter'
 
 import { Button, Input } from '@app/components'
 import {
@@ -13,8 +14,7 @@ import {
   ToastViewport
 } from '@app/components/toast'
 
-/* import { api } from '@app/lib/axios' */
-import { AxiosError } from 'axios'
+import { createUserService } from '@app/services/users'
 
 type CreateUserData = {
   email: string
@@ -28,6 +28,8 @@ export function SignUp() {
     message: ''
   })
 
+  const [, setLocation] = useLocation()
+
   const { handleSubmit, register } = useForm<CreateUserData>()
 
   function onOpenChange(newState: boolean) {
@@ -36,9 +38,12 @@ export function SignUp() {
 
   async function createUser(data: CreateUserData) {
     try {
-      console.log(data)
+      const response = await createUserService(data)
 
-      /* const response = await api.post('/users', data) */
+      localStorage.setItem('token', response.data.token)
+      localStorage.setItem('user-id', response.data.user.id)
+
+      setLocation('/app')
     } catch (error) {
       if (error instanceof AxiosError) {
         console.error(error)
