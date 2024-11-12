@@ -33,7 +33,7 @@ export class UsersController {
         }
       )
 
-      return reply.status(201).send({ user, token })
+      return reply.status(201).send({ ...user, token })
     } catch (error) {
       if (error instanceof InvalidCredentialsError) {
         return reply.status(401).send({ message: error.message })
@@ -70,7 +70,7 @@ export class UsersController {
         }
       )
 
-      return reply.status(201).send({ user, token })
+      return reply.status(201).send({ ...user, token })
     } catch (error) {
       if (error instanceof UserAlreadyExistError) {
         return reply.status(409).send({ message: error.message })
