@@ -2,7 +2,10 @@ import { FastifyReply, FastifyRequest } from 'fastify'
 import zod from 'zod'
 
 import { UserDoesNotExist } from '@app/use-cases/errors'
-import { makeCreateTransactionUseCase } from '@app/use-cases/factories'
+import {
+  makeCreateTransactionUseCase,
+  makeFindManyTransactionsByUserUseCase
+} from '@app/use-cases/factories'
 
 export class TransactionsController {
   async create(req: FastifyRequest, reply: FastifyReply) {
@@ -28,6 +31,31 @@ export class TransactionsController {
       })
 
       return reply.status(201).send(transaction)
+    } catch (error) {
+      if (error instanceof UserDoesNotExist) {
+        return reply.status(400).send({ message: error.message })
+      }
+
+      throw error
+    }
+  }
+
+  async findManyByUserId(req: FastifyRequest, reply: FastifyReply) {
+    const findManyByUserIdSchema = zod.object({
+      userId: zod.string()
+    })
+
+    const { userId } = findManyByUserIdSchema.parse(req.query)
+
+    try {
+      const findManyTransactionsByUserUseCase =
+        makeFindManyTransactionsByUserUseCase()
+
+      const { transactions } = await findManyTransactionsByUserUseCase.handle({
+        userId
+      })
+
+      return reply.status(200).send(transactions)
     } catch (error) {
       if (error instanceof UserDoesNotExist) {
         return reply.status(400).send({ message: error.message })

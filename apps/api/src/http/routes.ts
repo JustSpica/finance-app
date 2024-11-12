@@ -11,4 +11,5 @@ export async function appRoutes(app: FastifyInstance) {
   app.post('/users/auth', usersController.authenticate)
 
   app.post('/transactions', transactionsController.create)
+  app.get('/transactions/user', transactionsController.findManyByUserId)
 }
