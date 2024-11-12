@@ -2,10 +2,13 @@ import { FastifyReply, FastifyRequest } from 'fastify'
 import zod from 'zod'
 
 import {
+  InvalidCredentialsError,
+  UserAlreadyExistError
+} from '@app/use-cases/errors'
+import {
   makeAuthenticateUserUseCase,
   makeCreateUserUseCase
 } from '@app/use-cases/factories'
-import { UserAlreadyExistError } from '@app/use-cases/errors'
 
 export class UsersController {
   async authenticate(req: FastifyRequest, reply: FastifyReply) {
@@ -32,7 +35,9 @@ export class UsersController {
 
       return reply.status(201).send({ user, token })
     } catch (error) {
-      console.error(error)
+      if (error instanceof InvalidCredentialsError) {
+        return reply.status(401).send({ message: error.message })
+      }
 
       throw error
     }
