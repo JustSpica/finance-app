@@ -13,7 +13,9 @@ export class TransactionsController {
       description: zod.string(),
       userId: zod.string(),
       type: zod.union([zod.literal('input'), zod.literal('output')]),
-      value: zod.number()
+      value: zod.string().refine((value) => {
+        return /\d/.test(value)
+      })
     })
 
     const { description, type, userId, value } = createTransactionSchema.parse(
