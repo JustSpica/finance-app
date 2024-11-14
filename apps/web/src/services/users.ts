@@ -1,22 +1,24 @@
-import { api } from '@app/lib/axios'
+import { api } from '@/lib/axios'
 
-type CreateUserRequest = {
-  email: string
-  password: string
-  username: string
-}
+import {
+  CreateUserResponse,
+  CreateUserRequest,
+  SignInUserRequest,
+  SignInUserResponse
+} from './types/users'
 
-type CreateUserResponse = {
-  user: {
-    created_at: Date
-    email: string
-    id: string
-    password_hash: string
-    username: string
+export class UsersService {
+  async create(data: CreateUserRequest) {
+    return await api.post<CreateUserResponse>('/users', data)
   }
-  token: string
-}
 
-export async function createUserService(req: CreateUserRequest) {
-  return await api.post<CreateUserResponse>('/users', req)
+  async auth(data: SignInUserRequest) {
+    return await api.post<SignInUserResponse>('/users/auth', data)
+  }
+
+  static make() {
+    const users = new UsersService()
+
+    return users
+  }
 }
