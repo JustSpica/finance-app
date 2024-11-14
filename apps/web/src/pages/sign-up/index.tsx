@@ -4,17 +4,9 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useLocation } from 'wouter'
 
-import { Button, Input } from '@app/components'
-import {
-  Toast,
-  ToastClose,
-  ToastDescription,
-  ToastProvider,
-  ToastTitle,
-  ToastViewport
-} from '@app/components/toast'
+import { Button, Input, Toast } from '@/components'
 
-import { createUserService } from '@app/services/users'
+import { UsersService } from '@/services/users'
 
 type CreateUserData = {
   email: string
@@ -23,14 +15,12 @@ type CreateUserData = {
 }
 
 export function SignUp() {
+  const { handleSubmit, register } = useForm<CreateUserData>()
+  const [, setLocation] = useLocation()
   const [error, setError] = useState({
     state: false,
     message: ''
   })
-
-  const [, setLocation] = useLocation()
-
-  const { handleSubmit, register } = useForm<CreateUserData>()
 
   function onOpenChange(newState: boolean) {
     setError((prevState) => ({ ...prevState, state: newState }))
@@ -38,10 +28,12 @@ export function SignUp() {
 
   async function createUser(data: CreateUserData) {
     try {
-      const response = await createUserService(data)
+      const users = UsersService.make()
+
+      const response = await users.create(data)
 
       localStorage.setItem('token', response.data.token)
-      localStorage.setItem('user-id', response.data.user.id)
+      localStorage.setItem('user-id', response.data.id)
 
       setLocation('/app')
     } catch (error) {
@@ -58,7 +50,7 @@ export function SignUp() {
   }
 
   return (
-    <ToastProvider>
+    <>
       <section className="flex h-screen w-full items-center bg-zinc-950">
         <div className="mx-auto w-full max-w-[484px] space-y-8">
           <header>
@@ -113,27 +105,28 @@ export function SignUp() {
               />
             </div>
 
-            <Button className="mt-8 w-full font-medium">Criar conta</Button>
+            <Button type="submit" className="mt-8 w-full font-medium">
+              Criar conta
+            </Button>
           </form>
         </div>
       </section>
 
-      <Toast
+      <Toast.Root
         className="flex gap-3"
         open={error.state}
         onOpenChange={onOpenChange}
       >
-        <ToastClose />
+        <Toast.Close />
         <CircleX className="text-red-500" size={20} />
         <div className="space-y-1">
-          <ToastTitle className="flex items-center gap-1">
+          <Toast.Title className="flex items-center gap-1">
             <Sparkles className="text-zinc-400" size={16} />
             Notificação de erro
-          </ToastTitle>
-          <ToastDescription>{error.message}</ToastDescription>
+          </Toast.Title>
+          <Toast.Description>{error.message}</Toast.Description>
         </div>
-      </Toast>
-      <ToastViewport />
-    </ToastProvider>
+      </Toast.Root>
+    </>
   )
 }
