@@ -28,6 +28,7 @@ export class CreateUserUseCase {
       username,
       password_hash
     })
+    delete user.password_hash
 
     return { user }
   }

@@ -1,17 +1,17 @@
 import { PrismaTransactionsRepository } from '@app/repositories/prisma/prisma-transactions-repository'
 import { PrismaUsersRepository } from '@app/repositories/prisma/prisma-users-repository'
 
-import { FindManyTransactionsByUserUseCase } from '../find-many-transactions-by-user'
+import { FindManyTransactionsByUserIdUseCase } from '../find-many-transactions-by-user-id'
 
-export function makeFindManyTransactionsByUserUseCase() {
+export function makeFindManyTransactionsByUserIdUseCase() {
   const transactionsRepository = new PrismaTransactionsRepository()
   const usersRepository = new PrismaUsersRepository()
 
-  const findManyTransactionsByUserUseCase =
-    new FindManyTransactionsByUserUseCase(
+  const findManyTransactionsByUserIdUseCase =
+    new FindManyTransactionsByUserIdUseCase(
       transactionsRepository,
       usersRepository
     )
 
-  return findManyTransactionsByUserUseCase
+  return findManyTransactionsByUserIdUseCase
 }

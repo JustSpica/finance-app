@@ -4,6 +4,7 @@ import { UsersRepository } from '@app/repositories/@types/users-repository'
 import { UserDoesNotExist } from './errors'
 
 interface CreateTransactionUseCaseRequest {
+  category?: string | null
   description: string
   type: string
   userId: string

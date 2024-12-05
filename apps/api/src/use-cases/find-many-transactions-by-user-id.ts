@@ -3,25 +3,24 @@ import { UsersRepository } from '@app/repositories/@types/users-repository'
 
 import { UserDoesNotExist } from './errors'
 
-interface FindManyTransactionsByUserUseCaseRequest {
-  userId: string
+interface FindManyTransactionsByUserIdUseCaseRequest {
+  id: string
 }
 
-export class FindManyTransactionsByUserUseCase {
+export class FindManyTransactionsByUserIdUseCase {
   constructor(
     private transactionRepository: TransactionsRepository,
     private usersRepository: UsersRepository
   ) {}
 
-  async handle({ userId }: FindManyTransactionsByUserUseCaseRequest) {
-    const user = await this.usersRepository.findById(userId)
+  async handle({ id }: FindManyTransactionsByUserIdUseCaseRequest) {
+    const user = await this.usersRepository.findById(id)
 
     if (!user) {
       throw new UserDoesNotExist()
     }
 
-    const transactions =
-      await this.transactionRepository.findManyByUserId(userId)
+    const transactions = await this.transactionRepository.findManyByUserId(id)
 
     return { transactions }
   }

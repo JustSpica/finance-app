@@ -26,3 +26,7 @@ export interface SignInUserResponse {
   username: string
   token: string
 }
+export interface UpdateUserBudgetRequest {
+  id: string
+  value: string
+}

@@ -8,14 +8,14 @@ import { Button, Input, Toast } from '@/components'
 
 import { UsersService } from '@/services/users'
 
-type CreateUserData = {
+type SignUpUserForm = {
   email: string
   password: string
   username: string
 }
 
 export function SignUp() {
-  const { handleSubmit, register } = useForm<CreateUserData>()
+  const { handleSubmit, register } = useForm<SignUpUserForm>()
   const [, setLocation] = useLocation()
   const [error, setError] = useState({
     state: false,
@@ -26,7 +26,7 @@ export function SignUp() {
     setError((prevState) => ({ ...prevState, state: newState }))
   }
 
-  async function createUser(data: CreateUserData) {
+  async function createUser(data: SignUpUserForm) {
     try {
       const users = UsersService.make()
 

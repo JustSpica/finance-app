@@ -6,16 +6,16 @@ import { twMerge } from 'tailwind-merge'
 import { Button, DropdownMenu, Input } from '@/components'
 import { currencyTransform } from '@/utils/currency-transform'
 
-type NewTransactionData = {
+type NewTransactionForm = {
   description: string
   type: 'input' | 'output'
   value: string
 }
 
 export function TransactionForm() {
-  const { control, handleSubmit, register } = useForm<NewTransactionData>()
+  const { control, handleSubmit, register } = useForm<NewTransactionForm>()
 
-  async function createTransaction(data: NewTransactionData) {
+  async function createTransaction(data: NewTransactionForm) {
     console.log(data)
   }
 

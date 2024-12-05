@@ -4,7 +4,7 @@ import zod from 'zod'
 import { UserDoesNotExist } from '@app/use-cases/errors'
 import {
   makeCreateTransactionUseCase,
-  makeFindManyTransactionsByUserUseCase
+  makeFindManyTransactionsByUserIdUseCase
 } from '@app/use-cases/factories'
 
 export class TransactionsController {
@@ -43,19 +43,19 @@ export class TransactionsController {
   }
 
   async findManyByUserId(req: FastifyRequest, reply: FastifyReply) {
-    const findManyByUserIdSchema = zod.object({
-      userId: zod.string()
+    const routeParamsSchema = zod.object({
+      id: zod.string()
     })
 
-    const { userId } = findManyByUserIdSchema.parse(req.query)
+    const { id } = routeParamsSchema.parse(req.params)
 
     try {
-      const findManyTransactionsByUserUseCase =
-        makeFindManyTransactionsByUserUseCase()
+      const findManyTransactionsByUserIdUseCase =
+        makeFindManyTransactionsByUserIdUseCase()
 
-      const { transactions } = await findManyTransactionsByUserUseCase.handle({
-        userId
-      })
+      const { transactions } = await findManyTransactionsByUserIdUseCase.handle(
+        { id }
+      )
 
       return reply.status(200).send(transactions)
     } catch (error) {

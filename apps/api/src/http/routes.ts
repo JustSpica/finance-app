@@ -1,16 +1,15 @@
 import { FastifyInstance } from 'fastify'
 
-import { UsersController } from './controllers/users.controller'
-import { TransactionsController } from './controllers/transactions.controller'
-
-const usersController = new UsersController()
-const transactionsController = new TransactionsController()
+import {
+  createTransactionController,
+  findManyTransactionsByUserIdController
+} from './controllers/transactions'
+import { authUserController, createUserController } from './controllers/user'
 
 export async function appRoutes(app: FastifyInstance) {
-  app.post('/users', usersController.create)
-  app.post('/users/auth', usersController.authenticate)
-  app.put('/users/budget', usersController.updateBudget)
+  app.post('/users', createUserController)
+  app.post('/users/auth', authUserController)
 
-  app.post('/transactions', transactionsController.create)
-  app.get('/transactions/user', transactionsController.findManyByUserId)
+  app.post('/transactions', createTransactionController)
+  app.get('/transactions/user/:id', findManyTransactionsByUserIdController)
 }
