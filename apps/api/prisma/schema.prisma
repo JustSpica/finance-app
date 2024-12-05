@@ -31,11 +31,11 @@ model Category {
   id   String @id @default(uuid())
   name String
 
-  user_id String?
+  user_id String
 
   transactions Transaction[]
 
-  user User? @relation(fields: [user_id], references: [id])
+  user User @relation(fields: [user_id], references: [id])
 
   @@map("categories")
 }

@@ -25,6 +25,8 @@ export class AuthenticateUserUseCase {
       throw new InvalidCredentialsError()
     }
 
+    delete user.password_hash
+
     return {
       user
     }

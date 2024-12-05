@@ -1,29 +1,44 @@
 import { api } from '@/lib/axios'
 
 import {
+  AuthenticateUserRequest,
+  AuthenticateUserResponse,
   CreateUserResponse,
   CreateUserRequest,
-  SignInUserRequest,
-  SignInUserResponse,
-  UpdateUserBudgetRequest
+  FindSummaryResponse,
+  UpdateUserBudgetResponse
 } from './types/users'
 
-export class UsersService {
-  async create(data: CreateUserRequest) {
-    return await api.post<CreateUserResponse>('/users', data)
-  }
+export async function create(data: CreateUserRequest) {
+  return await api.post<CreateUserResponse>('/users', data)
+}
 
-  async auth(data: SignInUserRequest) {
-    return await api.post<SignInUserResponse>('/users/auth', data)
-  }
+export async function authenticate(data: AuthenticateUserRequest) {
+  return await api.post<AuthenticateUserResponse>('/users/auth', data)
+}
 
-  async updateBudget(data: UpdateUserBudgetRequest) {
-    return await api.put('/users/budget', data)
-  }
+export async function findSummary() {
+  const userId = localStorage.getItem('user-id')
 
-  static make() {
-    const users = new UsersService()
+  const { data } = await api.get<FindSummaryResponse>('/users/summary', {
+    params: { userId }
+  })
 
-    return users
-  }
+  return data
+}
+
+export async function updateBudget(value: number) {
+  const userId = localStorage.getItem('user-id')
+
+  const { data } = await api.put<UpdateUserBudgetResponse>(
+    '/users/budget',
+    {
+      value
+    },
+    {
+      params: { userId }
+    }
+  )
+
+  return data
 }

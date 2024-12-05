@@ -15,10 +15,10 @@ export const Content = React.forwardRef<
       <DropdownMenuPrimitive.Content
         ref={ref}
         className={twMerge(
-          'z-50 min-w-80 rounded-md border border-zinc-800 bg-zinc-950 p-2 shadow-md',
-          'data-[state=closed]: data-[state=closed]:animate-out data-[state=closed]:fade-out-0',
+          'z-50 min-w-32 rounded-md border border-zinc-800 bg-zinc-950 p-2 shadow-md',
+          'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
           'data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
-          'data-[side=right]:slide-in-from-left-2',
+          'data-[side=bottom]:slide-in-from-top-2',
           className
         )}
         sideOffset={sideOffset}
@@ -36,8 +36,8 @@ export const Item = React.forwardRef<
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={twMerge(
-      'cursor-pointer rounded-md p-2 text-sm text-zinc-800 transition-colors',
-      'hover:bg-zinc-100',
+      'cursor-pointer rounded-md p-2 text-sm text-white outline-none transition-colors',
+      'hover:bg-zinc-800',
       className
     )}
     {...props}

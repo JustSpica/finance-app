@@ -1,4 +1,4 @@
-export function currencyTransform(event: React.ChangeEvent<HTMLInputElement>) {
+function mask(event: React.ChangeEvent<HTMLInputElement>) {
   let cleanValue = event.target.value.replace(/\D/g, '')
 
   if (cleanValue.length === 13) {
@@ -13,3 +13,9 @@ export function currencyTransform(event: React.ChangeEvent<HTMLInputElement>) {
 
   return parsedValue.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 }
+
+function unmask(value: string) {
+  return parseInt(value.replace('.', '').replace(',', '')) || null
+}
+
+export const currency = { mask, unmask }

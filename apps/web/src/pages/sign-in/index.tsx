@@ -1,48 +1,49 @@
 import { AxiosError } from 'axios'
-import { ChevronRight, CircleDollarSign, CircleX, Sparkles } from 'lucide-react'
-import { useState } from 'react'
+import { ChevronRight, CircleDollarSign } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { Link, useLocation } from 'wouter'
 
-import { Button, Input, Toast } from '@/components'
-import { UsersService } from '@/services/users'
+import { Button, Input } from '@/components'
 
-type SignInUserForm = {
+import { useToast } from '@/components/toast/use-toast'
+
+import * as UsersService from '@/services/users'
+
+type AuthenticateUserForm = {
   email: string
   password: string
 }
 
 export function SignIn() {
-  const { handleSubmit, register } = useForm<SignInUserForm>()
+  const { handleSubmit, register } = useForm<AuthenticateUserForm>()
   const [, setLocation] = useLocation()
-  const [error, setError] = useState({
-    state: false,
-    message: ''
-  })
 
-  function onOpenChange(newState: boolean) {
-    setError((prevState) => ({ ...prevState, state: newState }))
-  }
+  const { toast } = useToast()
 
-  async function signIn(data: SignInUserForm) {
+  async function signIn(data: AuthenticateUserForm) {
     try {
-      const users = UsersService.make()
-
-      const response = await users.auth(data)
+      const response = await UsersService.authenticate(data)
 
       localStorage.setItem('token', response.data.token)
-      localStorage.setItem('user-id', response.data.id)
+      localStorage.setItem('user-id', response.data.user.id)
 
       setLocation('/app')
     } catch (error) {
       if (error instanceof AxiosError) {
         console.error(error)
         if (error.status === 401) {
-          setError({
-            message: 'O e-mail ou senha informados estão incorretos.',
-            state: true
+          return toast({
+            description: 'O e-mail ou senha informados estão incorretos.',
+            title: 'Notificação de erro',
+            variant: 'error'
           })
         }
+
+        return toast({
+          description: 'Ocorreu um erro ao fazer o seu login.',
+          title: 'Notificação de erro',
+          variant: 'error'
+        })
       }
     }
   }
@@ -68,7 +69,7 @@ export function SignIn() {
             <div className="mt-4 space-y-2">
               <label
                 className="text-sm font-medium text-zinc-400"
-                htmlFor="companyName"
+                htmlFor="email"
               >
                 Email
               </label>
@@ -82,7 +83,7 @@ export function SignIn() {
             <div className="mt-4 space-y-2">
               <label
                 className="text-sm font-medium text-zinc-400"
-                htmlFor="companyName"
+                htmlFor="password"
               >
                 Senha
               </label>
@@ -99,22 +100,6 @@ export function SignIn() {
           </form>
         </div>
       </section>
-
-      <Toast.Root
-        className="flex gap-3"
-        open={error.state}
-        onOpenChange={onOpenChange}
-      >
-        <Toast.Close />
-        <CircleX className="text-red-500" size={20} />
-        <div className="space-y-1">
-          <Toast.Title className="flex items-center gap-1">
-            <Sparkles className="text-zinc-400" size={16} />
-            Notificação de erro
-          </Toast.Title>
-          <Toast.Description>{error.message}</Toast.Description>
-        </div>
-      </Toast.Root>
     </>
   )
 }

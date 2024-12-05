@@ -1,14 +1,21 @@
 import {
-  WalletMinimal,
-  PencilLine,
+  CircleArrowDown,
   CircleArrowUp,
-  CircleArrowDown
+  PencilLine,
+  WalletMinimal
 } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import { Controller, useForm } from 'react-hook-form'
 
 import { Button, Popover, Input } from '@/components'
-import { UsersService } from '@/services/users'
-import { currencyTransform } from '@/utils/currency-transform'
+import { useToast } from '@/components/toast/use-toast'
+
+import { queryClient } from '@/lib/react-query'
+
+import * as UsersService from '@/services/users'
+
+import { currency } from '@/utils/currency-mask'
+import { useEffect } from 'react'
 
 type UpdateBudgetForm = {
   value: string
@@ -20,19 +27,64 @@ export function Summary() {
     formState: { isSubmitting },
     handleSubmit
   } = useForm<UpdateBudgetForm>()
-  const userId = String(localStorage.getItem('user-id'))
 
-  async function updateUserBudget(data: UpdateBudgetForm) {
+  const { toast } = useToast()
+
+  const summaryQuery = useQuery({
+    queryKey: ['summary-query'],
+    queryFn: UsersService.findSummary
+  })
+
+  const BRLCurrency = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  })
+
+  async function updateBudget(data: UpdateBudgetForm) {
+    const currencyValue = currency.unmask(data.value)
+
+    if (!currencyValue) return
+
     try {
-      const users = UsersService.make()
+      await UsersService.updateBudget(currencyValue)
 
-      await new Promise((resolve) => setTimeout(resolve, 2500))
+      queryClient.invalidateQueries({ queryKey: ['summary-query'] })
 
-      await users.updateBudget({ id: userId, value: data.value })
+      toast({
+        description: 'Orçamento atualizado.',
+        title: 'Notificação de sucesso!',
+        variant: 'success'
+      })
     } catch (error) {
-      console.log(error)
+      toast({
+        description: 'Ocorreu um erro ao atualizar o orçamento.',
+        title: 'Notificação de erro',
+        variant: 'error'
+      })
     }
   }
+
+  useEffect(() => {
+    if (summaryQuery.data) {
+      if (summaryQuery.data.limit_alert) {
+        toast({
+          description:
+            'Seus gastos ultrapassaram 70% do seu orçamento mensal definido.',
+          title: 'Notificação de alerta!',
+          variant: 'warn'
+        })
+      }
+
+      if (summaryQuery.data.surplus_alert) {
+        toast({
+          description: 'Seus gastos excederam o orçamento mensal definido.',
+          title: 'Notificação de alerta!',
+          variant: 'warn'
+        })
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [summaryQuery.data])
 
   return (
     <div className="grid w-full grid-cols-3 gap-4">
@@ -46,7 +98,7 @@ export function Summary() {
         </header>
         <div className="flex w-full items-center gap-2">
           <strong className="block text-2xl font-semibold text-white">
-            R$ 0,00
+            {BRLCurrency.format(Number(summaryQuery.data?.budget) / 100)}
           </strong>
 
           <Popover.Root>
@@ -61,10 +113,7 @@ export function Summary() {
                 Alterar orçamento
               </span>
 
-              <form
-                className="space-y-3"
-                onSubmit={handleSubmit(updateUserBudget)}
-              >
+              <form className="space-y-3" onSubmit={handleSubmit(updateBudget)}>
                 <Controller
                   control={control}
                   name="value"
@@ -72,7 +121,7 @@ export function Summary() {
                     <Input
                       placeholder="Valor"
                       value={value}
-                      onChange={(event) => onChange(currencyTransform(event))}
+                      onChange={(event) => onChange(currency.mask(event))}
                     />
                   )}
                 />
@@ -96,7 +145,7 @@ export function Summary() {
         </header>
         <div className="w-full">
           <strong className="block text-2xl font-semibold text-white">
-            R$ 0,00
+            {BRLCurrency.format(Number(summaryQuery.data?.input) / 100)}
           </strong>
         </div>
       </div>
@@ -111,7 +160,7 @@ export function Summary() {
         </header>
         <div className="w-full">
           <strong className="block text-2xl font-semibold text-white">
-            R$ 0,00
+            {BRLCurrency.format(Number(summaryQuery.data?.output) / 100)}
           </strong>
         </div>
       </div>

@@ -5,28 +5,45 @@ export interface CreateUserRequest {
 }
 
 export interface CreateUserResponse {
-  created_at: Date
-  email: string
-  id: string
-  password_hash: string
-  username: string
   token: string
+  user: {
+    budget: string | null
+    created_at: Date
+    email: string
+    id: string
+    username: string
+  }
 }
 
-export interface SignInUserRequest {
+export interface AuthenticateUserRequest {
   email: string
   password: string
 }
 
-export interface SignInUserResponse {
-  created_at: Date
-  email: string
-  id: string
-  password_hash: string
-  username: string
+export interface AuthenticateUserResponse {
   token: string
+  user: {
+    budget: string | null
+    created_at: Date
+    email: string
+    id: string
+    username: string
+  }
 }
-export interface UpdateUserBudgetRequest {
-  id: string
-  value: string
+
+export interface FindSummaryResponse {
+  budget: number | null
+  input: number
+  output: number
+  limit_alert: boolean
+  surplus_alert: boolean
+}
+export interface UpdateUserBudgetResponse {
+  user: {
+    budget: string | null
+    created_at: Date
+    email: string
+    id: string
+    username: string
+  }
 }

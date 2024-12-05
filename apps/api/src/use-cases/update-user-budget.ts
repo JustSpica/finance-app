@@ -3,25 +3,22 @@ import { UsersRepository } from '@app/repositories/@types/users-repository'
 import { UserDoesNotExist } from './errors'
 
 interface UpdateUserBudgetUseCaseRequest {
-  id: string
-  value: string
+  userId: string
+  value: number
 }
 
 export class UpdateUserBudgetUseCase {
   constructor(private usersRepository: UsersRepository) {}
 
-  async handle({ id, value }: UpdateUserBudgetUseCaseRequest) {
-    const checkUser = await this.usersRepository.findById(id)
+  async handle({ userId, value }: UpdateUserBudgetUseCaseRequest) {
+    const userById = await this.usersRepository.findById(userId)
 
-    if (!checkUser) {
+    if (!userById) {
       throw new UserDoesNotExist()
     }
 
-    const integerValue = parseInt(
-      value.replace(',', '').replace('.', '').trim()
-    )
-
-    const user = await this.usersRepository.updateBudget(id, integerValue)
+    const user = await this.usersRepository.updateBudget(userId, value)
+    delete user.password_hash
 
     return { user }
   }

@@ -4,7 +4,7 @@ import { UsersRepository } from '@app/repositories/@types/users-repository'
 import { UserDoesNotExist } from './errors'
 
 interface FindManyTransactionsByUserIdUseCaseRequest {
-  id: string
+  userId: string
 }
 
 export class FindManyTransactionsByUserIdUseCase {
@@ -13,14 +13,15 @@ export class FindManyTransactionsByUserIdUseCase {
     private usersRepository: UsersRepository
   ) {}
 
-  async handle({ id }: FindManyTransactionsByUserIdUseCaseRequest) {
-    const user = await this.usersRepository.findById(id)
+  async handle({ userId }: FindManyTransactionsByUserIdUseCaseRequest) {
+    const user = await this.usersRepository.findById(userId)
 
     if (!user) {
       throw new UserDoesNotExist()
     }
 
-    const transactions = await this.transactionRepository.findManyByUserId(id)
+    const transactions =
+      await this.transactionRepository.findManyByUserId(userId)
 
     return { transactions }
   }

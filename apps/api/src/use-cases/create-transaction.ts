@@ -4,7 +4,7 @@ import { UsersRepository } from '@app/repositories/@types/users-repository'
 import { UserDoesNotExist } from './errors'
 
 interface CreateTransactionUseCaseRequest {
-  category?: string | null
+  categoryId?: string | null
   description: string
   type: string
   userId: string
@@ -17,7 +17,11 @@ export class CreateTransactionUseCase {
     private usersRepository: UsersRepository
   ) {}
 
-  async handle({ userId, ...data }: CreateTransactionUseCaseRequest) {
+  async handle({
+    categoryId,
+    userId,
+    ...props
+  }: CreateTransactionUseCaseRequest) {
     const user = await this.usersRepository.findById(userId)
 
     if (!user) {
@@ -25,7 +29,8 @@ export class CreateTransactionUseCase {
     }
 
     const transaction = await this.transactionRepository.create({
-      ...data,
+      ...props,
+      category_id: categoryId,
       user_id: userId
     })
 

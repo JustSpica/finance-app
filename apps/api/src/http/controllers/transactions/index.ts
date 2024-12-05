@@ -1,2 +1,3 @@
-export * from './create-transactions.controller'
-export * from './find-many-transactions-by-user-id.controller'
+export * from './create.controller'
+export * from './find-many-by-user-id.controller'
+export * from './remove.controller'

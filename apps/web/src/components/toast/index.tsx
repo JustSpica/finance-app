@@ -12,7 +12,7 @@ export const Viewport = React.forwardRef<
   <ToastPrimitive.Viewport
     ref={ref}
     className={twMerge(
-      'fixed bottom-0 right-0 z-[100] w-[420px] p-4',
+      'fixed bottom-0 right-0 z-[100] w-[420px] space-y-2 p-4',
       className
     )}
     {...props}
